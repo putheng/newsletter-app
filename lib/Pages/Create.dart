@@ -25,7 +25,7 @@ class _CreateNewsState extends State<CreateNews> {
   };
   
   File _imageFile;
-  String emptyImage = null;
+  String emptyImage = '';
 
 void _openImagePicker(BuildContext context){
     showModalBottomSheet(

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:newsletter/Blocs/CounterBloc.dart';
 import 'package:newsletter/Blocs/LoginBloc.dart';
 import 'package:newsletter/Home.dart';
 import 'package:newsletter/Login.dart';
-import 'package:newsletter/Pages/Counter.dart';
 import 'package:newsletter/Pages/Create.dart';
 import 'package:newsletter/Pages/HomeAuth.dart';
 import 'package:newsletter/Pages/MyNews.dart';
@@ -35,9 +33,6 @@ class MyApp extends StatelessWidget {
           '/my': (BuildContext context) => MyNewsAuth(),
           '/login': (BuildContext context) => LoginPage(),
           '/register': (BuildContext context) => RegisterPage(),
-        },
-        onGenerateRoute: (RouteSettings settings) {
-          final List<String> pathElements = settings.name.split('/');
         },
         onUnknownRoute: (RouteSettings settings) {
           return MaterialPageRoute(

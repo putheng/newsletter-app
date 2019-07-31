@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -27,8 +26,7 @@ class MenuOptionButton extends StatelessWidget {
                       onPressed: () async {
                         final SharedPreferences prefs = await SharedPreferences.getInstance();
                         final String token = prefs.getString('token');
-                        http.Response response;
-                        response = await http.post(
+                        await http.post(
                           'https://api.cambodiahr.com/api/v2/news/delete',
                           headers: {
                             HttpHeaders.authorizationHeader: "Bearer "+ token
@@ -37,7 +35,6 @@ class MenuOptionButton extends StatelessWidget {
                             'id': id
                           }
                         );
-                        final Map<String, dynamic> resp = json.decode(response.body);
                         Navigator.pushReplacementNamed(context, '/my');
                       },
                     ),

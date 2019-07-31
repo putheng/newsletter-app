@@ -21,6 +21,15 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_launcher_icons: "^0.7.0"
+
+flutter_icons:
+  android: true 
+  ios: true
+  image_path: "assets/app-icon.png"
+  adaptive_icon_background: "#FFFAFAFA"
+  adaptive_icon_foreground: "assets/app-icon.png"
+
 
 flutter:
 
@@ -33,6 +42,8 @@ flutter:
    - assets/en.png
    - assets/logo.png
    - assets/empty.png
+   - assets/app-icon-2.png
+   - assets/app-icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
