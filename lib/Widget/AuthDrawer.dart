@@ -48,11 +48,21 @@ class AuthDrawer extends StatelessWidget {
               Divider(),
               ListTile(
                 title: Text('Create News'),
-                leading: Icon(Icons.add),
+                leading: Icon(Icons.add_photo_alternate),
                 trailing: Icon(Icons.arrow_forward_ios, size: 15.0,),
                 onTap: () {
                   Navigator.of(context).pop();
                   Navigator.pushReplacementNamed(context, '/create');
+                }
+              ),
+              Divider(),
+              ListTile(
+                title: Text('My News'),
+                leading: Icon(Icons.clear_all),
+                trailing: Icon(Icons.arrow_forward_ios, size: 15.0,),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacementNamed(context, '/my');
                 }
               ),
               Divider(),

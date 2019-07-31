@@ -154,7 +154,9 @@ Widget _buildTitleTextField() {
 
     response = await http.post(
       "https://api.cambodiahr.com/api/v2/news/create",
-      headers: {HttpHeaders.authorizationHeader: "Bearer "+ token},
+      headers: {
+        HttpHeaders.authorizationHeader: "Bearer "+ token
+      },
       body: {
         'title' : title,
         'description' : description,
@@ -167,7 +169,9 @@ Widget _buildTitleTextField() {
     
     loginBloc.stopLoading();
     
-    print(responseData);
+    if(responseData['status']){
+      Navigator.pushReplacementNamed(context, '/my');
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -228,7 +232,7 @@ Widget _buildTitleTextField() {
                               padding: const EdgeInsets.only(right: 20.0),
                               child: CupertinoActivityIndicator(),
                             ) : Text(''),
-                            Text('LOGIN',
+                            Text('CREATE',
                                 style: TextStyle(
                                   fontFamily: 'Lato',
                                   fontSize: 15.0,

@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
       final String password = _formData['password'];
       final String email = _formData['email'];
 
-      response = await http.post('https://newsletter-putheng.herokuapp.com/api/login',
+      response = await http.post('https://api.cambodiahr.com/api/login',
         body: {
           'password': password,
           'email': email
@@ -96,7 +96,25 @@ class _LoginPageState extends State<LoginPage> {
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if(responseData['error'] == 'Unauthorized'){
-        
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Authentication failed"),
+              content: Text("We could not find an account associated with that information"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Close"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        loginBloc.stopLoading();
+        return;
       }
 
       loginBloc.stopLoading();

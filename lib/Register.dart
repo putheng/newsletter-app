@@ -1,6 +1,13 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:newsletter/Blocs/LoginBloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:newsletter/Widget/Drawer.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
 
@@ -11,9 +18,11 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool loading = false;
 
   final Map<String, dynamic> _formData = {
     'username': null,
+    'email': null,
     'password': null,
   };
 
@@ -35,11 +44,6 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value.isEmpty) {
           return 'This field is required!';
         }
-
-        if(double.tryParse(value) == null && !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                .hasMatch(value)){
-          return 'Invalid email or phone number';
-        }
       },
       onSaved: (String value) {
         _formData['email'] = value;
@@ -47,7 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-Widget _buildUsernameTextField() {
+  Widget _buildUsernameTextField() {
     return TextFormField(
       decoration: InputDecoration(
         focusedBorder: OutlineInputBorder(
@@ -67,7 +71,7 @@ Widget _buildUsernameTextField() {
         }
       },
       onSaved: (String value) {
-        _formData['email'] = value;
+        _formData['username'] = value;
       },
     );
   }
@@ -95,15 +99,71 @@ Widget _buildUsernameTextField() {
     );
   }
 
+    void _submitForm(loginBloc) async {
+    
+      if (!_formKey.currentState.validate()) {
+        return;
+      }
+      
+      loginBloc.starLoading();
+
+      _formKey.currentState.save();
+      http.Response response;
+      final String password = _formData['password'];
+      final String email = _formData['email'];
+      final String username = _formData['username'];
+
+      response = await http.post('https://api.cambodiahr.com/api/register',
+        body: {
+          'password': password,
+          'email': email,
+          'name': username,
+        }
+      );
+
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      if(responseData['error'] == 'Unauthorized'){
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Whoops"),
+              content: Text("Something when wrong, please try again"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Close"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        loginBloc.stopLoading();
+        return;
+      }
+
+      loginBloc.stopLoading();
+
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('token', responseData['access_token']);
+
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+
   @override
   Widget build(BuildContext context) {
+    final LoginBloc loginBloc = Provider.of<LoginBloc>(context);
+
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightBlue,
-        title: Text('Newsletter'),
+        title: Text('Register'),
       ),
       drawer: GuestDrawer(),
       body: Center(
@@ -126,39 +186,45 @@ Widget _buildUsernameTextField() {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
+                  SizedBox(height: 20.0),
                   Container(child: _buildUsernameTextField(), height: 45.0,),
                   SizedBox(height: 10.0),
                   Container(child: _buildEmailTextField(), height: 45.0,),
                   SizedBox(height: 10.0),
-                  Container(
-                    height: 45.0,
-                    child: _buildPasswordTextField()),
+                  Container(height: 45.0,child: _buildPasswordTextField()),
                   SizedBox(height: 20.0),
                   FractionallySizedBox(
                     widthFactor: 0.6,
                     child: FlatButton(
+                      disabledColor: Colors.black12,
                       onPressed: (){
-                        
+                        _submitForm(loginBloc);
                       },
                       color: Colors.lightBlue,
                       textColor: Color(0xFF525252),
                       child: Padding(
                         padding: const EdgeInsets.only(top:13.0, bottom: 12.0),
-                        child: Text('REGISTER',
-                            style: TextStyle(
-                              fontFamily: 'Lato',
-                              fontSize: 15.0,
-                              color: Colors.white,
-                              letterSpacing: 2.0
-                            )
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            loginBloc.loading ? Padding(
+                              padding: const EdgeInsets.only(right: 20.0),
+                              child: CupertinoActivityIndicator(),
+                            ) : Text(''),
+                            Text('REGISTER',
+                                style: TextStyle(
+                                  fontFamily: 'Lato',
+                                  fontSize: 15.0,
+                                  color: Colors.white,
+                                  letterSpacing: 2.0
+                                )
+                            ),
+                          ],
                         ),
                       )
                     )
                   ),
-                  SizedBox(height: 20.0),
+                  SizedBox(height: 30.0),
                 ],
               ),
             ),

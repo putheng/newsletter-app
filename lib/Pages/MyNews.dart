@@ -1,24 +1,37 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:newsletter/Models/News.dart';
 import 'package:newsletter/NewsPage.dart';
 import 'package:newsletter/Widget/AuthDrawer.dart';
 import 'package:http/http.dart' as http;
+import 'package:newsletter/Widget/DeleteOption.dart';
 import 'dart:async';
 
-class MyHomeAuth extends StatefulWidget {
+import 'package:shared_preferences/shared_preferences.dart';
+
+class MyNewsAuth extends StatefulWidget {
 
 
   @override
-  _MyHomeAuthState createState() => _MyHomeAuthState();
+  _MyNewsAuthState createState() => _MyNewsAuthState();
 }
 
-class _MyHomeAuthState extends State<MyHomeAuth> with AutomaticKeepAliveClientMixin<MyHomeAuth>{
+class _MyNewsAuthState extends State<MyNewsAuth> with AutomaticKeepAliveClientMixin<MyNewsAuth>{
   @override
   bool get wantKeepAlive => true;
 
 Future<List<News>> getNews() async {
-  final response = await http.get('https://api.cambodiahr.com/api/news');
+  
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String token = prefs.getString('token');
+  final response = await http.get(
+    "https://api.cambodiahr.com/api/v2/news/my",
+    headers: {
+      HttpHeaders.authorizationHeader: "Bearer "+ token
+    },
+  );
   
   return getNewsJson(response.body);
 }
@@ -38,7 +51,7 @@ Future<List<News>> getNews() async {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightBlue,
-        title: Text('Latest news'),
+        title: Text('My news'),
       ),
       drawer: AuthDrawer(),
       body: Container(
@@ -61,6 +74,7 @@ Future<List<News>> getNews() async {
                         final String description = snapshot.data[index].description;
                         final String image = snapshot.data[index].image;
                         final String url = snapshot.data[index].url;
+                        final int id = snapshot.data[index].id;
 
                         return GestureDetector(
                             onTap: (){
@@ -91,6 +105,7 @@ Future<List<News>> getNews() async {
                                                 : description.substring(0, 200) + ' ...',
                                           ),
                                         ),
+                                        trailing: MenuOptionButton(id.toString())
                                       ),
                                     ),
                                   ],

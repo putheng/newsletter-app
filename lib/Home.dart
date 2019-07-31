@@ -54,7 +54,7 @@ Future<List<News>> getNews() async {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else {
-                    return ListView.builder(
+                    return snapshot.data.length == 0 ? Center(child: Text('Empty')) : ListView.builder(
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
                         final String title = snapshot.data[index].title;

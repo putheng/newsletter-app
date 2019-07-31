@@ -6,6 +6,7 @@ import 'package:newsletter/Login.dart';
 import 'package:newsletter/Pages/Counter.dart';
 import 'package:newsletter/Pages/Create.dart';
 import 'package:newsletter/Pages/HomeAuth.dart';
+import 'package:newsletter/Pages/MyNews.dart';
 import 'package:newsletter/Register.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
           '/': (BuildContext context) => MyHomePage(),
           '/home': (BuildContext context) => MyHomeAuth(),
           '/create': (BuildContext context) => CreateNews(),
+          '/my': (BuildContext context) => MyNewsAuth(),
           '/login': (BuildContext context) => LoginPage(),
           '/register': (BuildContext context) => RegisterPage(),
         },
